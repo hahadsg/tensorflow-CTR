@@ -13,6 +13,7 @@ class DScriteo:
         self.file_tr = os.path.join(self.dir, 'tr.libsvm')
         self.file_va = os.path.join(self.dir, 'va.libsvm')
 
+        self.num_fields = 39
         self.num_features = 0
         with open(self.file_feature_map, 'r') as f:
             for _ in f.readlines():

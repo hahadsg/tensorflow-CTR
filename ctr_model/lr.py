@@ -40,18 +40,16 @@ def lr_arch_fn(features, labels, mode, params):
 
 
 def lr_default_params():
+    ds_obj = DScriteo('../data/criteo/train100k/')
     params = dict({
-        'ds_dir': '../data/criteo/train100k/',
+        'ds_obj': ds_obj,
         'model_dir': './model/lr',
         'num_epochs': 1,
         'batch_size': 32,
     })
-    ds_obj = DScriteo(params['ds_dir'])
-    params['ds_obj'] = ds_obj
     params['model_params'] = {
-        'num_fields': 39,
+        'num_fields': ds_obj.num_fields,
         'num_features': ds_obj.num_features,
-        'embedding_size': 8,
         'learning_rate': 0.01,
         'l2_reg': 0.0,
     }
