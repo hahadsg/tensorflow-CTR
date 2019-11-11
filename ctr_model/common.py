@@ -73,6 +73,13 @@ def make_model_fn(arch_fn):
     return model_fn
 
 
+def estimator_default_config():
+    config = tf.estimator.RunConfig(
+        log_step_count_steps=1000,
+    )
+    return config
+
+
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
 

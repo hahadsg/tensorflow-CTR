@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import sys
+import shutil
 
 import numpy as np
 import tensorflow as tf
@@ -9,6 +10,7 @@ from common import (
     DScriteo,
     input_fn,
     make_model_fn,
+    estimator_default_config,
     tf_debug_print,
 )
 
@@ -23,10 +25,8 @@ def fm_arch_fn(features, labels, mode, params):
     feat_vals = tf.reshape(features['feat_vals'], shape=[-1, num_fields])
 
     V = tf.get_variable(name='fm_v', shape=[num_features, embedding_size], initializer=tf.glorot_normal_initializer())
-    W = tf.get_variable(name='fm_w', shape=[num_features], initializer=tf.zeros_initializer())
-    b = tf.get_variable(name='fm_b', shape=[1], initializer=tf.zeros_initializer())
-    # W = tf.get_variable(name='lr_w', shape=[num_features], initializer=tf.constant_initializer(0.0))
-    # b = tf.get_variable(name='lr_b', shape=[1], initializer=tf.constant_initializer(0.0))
+    W = tf.get_variable(name='lr_w', shape=[num_features], initializer=tf.constant_initializer(0.0))
+    b = tf.get_variable(name='lr_b', shape=[1], initializer=tf.constant_initializer(0.0))
 
     with tf.variable_scope('1-way-term'):
         feat_w = tf.nn.embedding_lookup(W, feat_ids)  # None * f
@@ -55,14 +55,13 @@ def fm_default_params():
         'model_dir': './model/fm',
         'num_epochs': 1,
         'batch_size': 32,
-        'eval_steps': None,
     })
     params['model_params'] = {
         'num_fields': ds_obj.num_fields,
         'num_features': ds_obj.num_features,
         'embedding_size': 8,
         'learning_rate': 0.01,
-        'l2_reg': 0.02,
+        'l2_reg': 0.00005,
     }
     return params
 
@@ -71,25 +70,28 @@ if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.INFO)
 
     params = fm_default_params()
+    config = estimator_default_config()
 
     ds_obj = params['ds_obj']
     model_dir = params['model_dir']
-    num_epochs = 10
+    num_epochs = 20
     batch_size = 32
-    eval_steps = params['eval_steps']
     model_params = params['model_params']
     print(model_params)
 
+    if os.path.exists(model_dir): shutil.rmtree(model_dir)  # clean model_dir
     model_fn = make_model_fn(fm_arch_fn)
-    FM = tf.estimator.Estimator(model_fn=model_fn, model_dir=model_dir, params=model_params)
+    FM = tf.estimator.Estimator(model_fn=model_fn, model_dir=model_dir, params=model_params, config=config)
 
-    train_spec = tf.estimator.TrainSpec(
-        lambda: input_fn(ds_obj.file_tr, batch_size, num_epochs, True))
-    eval_spec = tf.estimator.EvalSpec(
-        lambda: input_fn(ds_obj.file_va, batch_size, 1),
-        steps=eval_steps)
-    tf.estimator.train_and_evaluate(FM, train_spec, eval_spec)
+    FM.train(lambda: input_fn(ds_obj.file_tr, batch_size, num_epochs, True))
+    print('eval in tr dataset')
+    FM.evaluate(lambda: input_fn(ds_obj.file_tr, batch_size, 1))
+    print('eval in va dataset')
+    FM.evaluate(lambda: input_fn(ds_obj.file_va, batch_size, 1))
 
     """
-    INFO:tensorflow:Saving dict for global step 28114: accuracy = 0.78043437, auc = 0.714797, global_step = 28114, loss = 0.54261243
+    eval in tr dataset
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7838643, auc = 0.732719, global_step = 56227, loss = 0.48970073
+    eval in tr dataset
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.78641164, auc = 0.73056126, global_step = 56227, loss = 0.48550275
     """
