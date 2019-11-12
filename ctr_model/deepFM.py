@@ -20,6 +20,7 @@ def deepFM_arch_fn(features, labels, mode, params):
     num_features = params['num_features']  # n
     embedding_size = params['embedding_size']  # k
     hidden_layer_nodes = params['hidden_layer_nodes']  # DNN hidden layer node number
+    is_batch_norm = params['is_batch_norm']
     l2_reg = params['l2_reg']
 
     feat_ids = tf.reshape(features['feat_ids'], shape=[-1, num_fields])  # None * f
@@ -49,6 +50,8 @@ def deepFM_arch_fn(features, labels, mode, params):
             hidden_w = tf.get_variable(
                 name='deep_fc%d_weights' % i, shape=[prev_layer.shape[1], num_node],
                 initializer=tf.glorot_normal_initializer())
+            if is_batch_norm:
+                prev_layer = tf.layers.batch_normalization(prev_layer, training=(mode == tf.estimator.ModeKeys.TRAIN))
             prev_layer = tf.nn.relu(tf.matmul(prev_layer, hidden_w))
             H.append(hidden_w)
         y_deep = tf.reduce_sum(prev_layer, 1)
@@ -75,8 +78,9 @@ def deepFM_default_params():
         'num_fields': ds_obj.num_fields,
         'num_features': ds_obj.num_features,
         'embedding_size': 8,
-        'learning_rate': 0.001,
         'hidden_layer_nodes': [100, 100],
+        'is_batch_norm': True,
+        'learning_rate': 0.001,
         'l2_reg': 1e-3,
     }
     return params
@@ -107,7 +111,7 @@ if __name__ == '__main__':
 
     """
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.79472446, auc = 0.7699105, global_step = 56227, loss = 0.4612042
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.79316825, auc = 0.7692392, global_step = 56227, loss = 0.46349543
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7903965, auc = 0.7525043, global_step = 56227, loss = 0.4703719
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7893007, auc = 0.75313306, global_step = 56227, loss = 0.4705859
     """

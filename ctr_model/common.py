@@ -51,11 +51,18 @@ def make_model_fn(arch_fn):
     """
     def model_fn(features, labels, mode, params):
         learning_rate = params['learning_rate']
+        is_batch_norm = params['is_batch_norm']
 
         loss, pred = arch_fn(features, labels, mode, params)
 
         optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-        train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
+
+        if is_batch_norm:
+            update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+            with tf.control_dependencies(update_ops):
+                train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
+        else:
+            train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
 
         predictions = {'prob': pred}
         eval_metric_ops = {
