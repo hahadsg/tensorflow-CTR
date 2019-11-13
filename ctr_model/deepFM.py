@@ -50,9 +50,10 @@ def deepFM_arch_fn(features, labels, mode, params):
             hidden_w = tf.get_variable(
                 name='deep_fc%d_weights' % i, shape=[prev_layer.shape[1], num_node],
                 initializer=tf.glorot_normal_initializer())
+            prev_layer = tf.matmul(prev_layer, hidden_w)
             if is_batch_norm:
                 prev_layer = tf.layers.batch_normalization(prev_layer, training=(mode == tf.estimator.ModeKeys.TRAIN))
-            prev_layer = tf.nn.relu(tf.matmul(prev_layer, hidden_w))
+            prev_layer = tf.nn.relu(prev_layer)
             H.append(hidden_w)
         y_deep = tf.reduce_sum(prev_layer, 1)
 
@@ -111,7 +112,7 @@ if __name__ == '__main__':
 
     """
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.79316825, auc = 0.7692392, global_step = 56227, loss = 0.46349543
-    eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7893007, auc = 0.75313306, global_step = 56227, loss = 0.4705859
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.77896225, auc = 0.7520727, global_step = 56227, loss = 0.4853237
+    eval in va dataset
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7810321, auc = 0.7458131, global_step = 56227, loss = 0.48475942
     """
