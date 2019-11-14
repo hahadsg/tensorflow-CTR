@@ -51,7 +51,7 @@ def make_model_fn(arch_fn):
     """
     def model_fn(features, labels, mode, params):
         learning_rate = params['learning_rate']
-        is_batch_norm = params['is_batch_norm']
+        is_batch_norm = params.get('is_batch_norm', False)
 
         loss, pred = arch_fn(features, labels, mode, params)
 

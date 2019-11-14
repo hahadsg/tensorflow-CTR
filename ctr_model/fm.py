@@ -38,7 +38,7 @@ def fm_arch_fn(features, labels, mode, params):
         vx = tf.multiply(v, x)  # None * f * k
         square_sum = tf.square(tf.reduce_sum(vx, 1))  # None * k
         sum_square = tf.reduce_sum(tf.square(vx), 1)  # None * k
-        y_v = 0.5 * tf.reduce_sum((square_sum - sum_square), 1)  # None
+        y_v = 0.5 * tf.reduce_sum(tf.subtract(square_sum, sum_square), 1)  # None
 
     logits = b + y_w + y_v  # None
     pred = tf.sigmoid(logits)
@@ -60,8 +60,8 @@ def fm_default_params():
         'num_fields': ds_obj.num_fields,
         'num_features': ds_obj.num_features,
         'embedding_size': 8,
-        'learning_rate': 0.01,
-        'l2_reg': 0.00005,
+        'learning_rate': 0.001,
+        'l2_reg': 1e-3,
     }
     return params
 
@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
     """
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7838643, auc = 0.732719, global_step = 56227, loss = 0.48970073
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7939908, auc = 0.77037174, global_step = 56227, loss = 0.4618437
     eval in va dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.78641164, auc = 0.73056126, global_step = 56227, loss = 0.48550275
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7894003, auc = 0.752848, global_step = 56227, loss = 0.47008416
     """
