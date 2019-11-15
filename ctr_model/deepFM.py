@@ -112,7 +112,7 @@ if __name__ == '__main__':
 
     """
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.77896225, auc = 0.7520727, global_step = 56227, loss = 0.4853237
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7947467, auc = 0.7710146, global_step = 56227, loss = 0.46117908
     eval in va dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7810321, auc = 0.7458131, global_step = 56227, loss = 0.48475942
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.79159194, auc = 0.7528646, global_step = 56227, loss = 0.47020566
     """

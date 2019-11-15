@@ -100,7 +100,7 @@ def DCN_default_params():
         'cross_network_layer_num': 4,
         'deep_network_nodes': [100, 100],
         'is_batch_norm': True,
-        'learning_rate': 0.001,
+        'learning_rate': 0.0001,
         'l2_reg': 1e-2,
     }
     return params
@@ -131,7 +131,7 @@ if __name__ == '__main__':
 
     """
     eval in tr dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7815744, auc = 0.74945116, global_step = 56227, loss = 0.5130928
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7748605, auc = 0.7500452, global_step = 56227, loss = 0.49158287
     eval in va dataset
-    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.7844192, auc = 0.74418765, global_step = 56227, loss = 0.51156646
+    INFO:tensorflow:Saving dict for global step 56227: accuracy = 0.77625024, auc = 0.7450472, global_step = 56227, loss = 0.49128637
     """
